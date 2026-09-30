@@ -3,6 +3,7 @@ import 'package:e_commerce_app/pages/login_page.dart';
 import 'package:e_commerce_app/pages/sign_up_page.dart';
 import 'package:e_commerce_app/pages/account_page.dart';
 import 'package:e_commerce_app/pages/change_pass_page.dart';
+import 'package:e_commerce_app/pages/cart_page.dart';
 
 // import 'package:e_commerce_app/pages/sign_up_page.dart';
 
@@ -18,13 +19,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Color(0xFF2563EB))),
       home: const LoginPage(),
       routes: {
         '/login_page': (context) => const LoginPage(),
         '/sign_up_page': (context) => const SignUpPage(),
         '/account_page': (context) => const AccountPage(),
         '/change_pass_page': (context) => const ChangePassPage(),
+        '/cart_page': (context) => const CartPage(),
       },
     );
   }

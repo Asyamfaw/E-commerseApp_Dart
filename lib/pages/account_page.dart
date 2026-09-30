@@ -133,7 +133,7 @@ class _AccountPageState extends State<AccountPage>
             ),
             child: ClipOval(
               child: Image.asset(
-                'images/ustApri.png',
+                'assets/images/ustApri.png',
                 width: 76,
                 height: 76,
                 fit: BoxFit.cover,
@@ -257,6 +257,17 @@ class _AccountPageState extends State<AccountPage>
             title: "Profile",
             onTap: () {
               Navigator.pushNamed(context, '/account_page');
+            },
+          ),
+        ),
+        _buildAnimatedItem(
+          startDelay: 0.2,
+          child: _buildSettingItem(
+            context,
+            icon: Icons.shopping_cart_outlined,
+            title: "My Cart",
+            onTap: () {
+              Navigator.pushNamed(context, '/cart_page');
             },
           ),
         ),
