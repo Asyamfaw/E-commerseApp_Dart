@@ -5,39 +5,41 @@ class CartAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.primary,
-      child: Container(
-        padding: const EdgeInsets.all(20),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        // Fitur Tugas No. 1: Shadow pada AppBar
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: SafeArea(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.pop(context, '/');
-              },
-              child: const Icon(
-                Icons.arrow_back,
-                size: 22,
-                color: Color.fromARGB(255, 252, 248, 248),
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Color(0xFF1E293B),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            const Text(
+              'Keranjang Belanja',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: Text(
-                'My Cart',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 252, 248, 248),
-                ),
-              ),
-            ),
-            const Spacer(),
-            const Icon(
-              Icons.more_vert,
-              size: 30,
-              color: Color.fromARGB(255, 252, 248, 248),
-            ),
+            const SizedBox(
+              width: 40,
+            ), // Menjaga posisi judul tetap presisi di tengah
           ],
         ),
       ),

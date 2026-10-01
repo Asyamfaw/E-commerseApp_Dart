@@ -1,58 +1,115 @@
 import 'package:flutter/material.dart';
 
-class CartBottomnavbar extends StatelessWidget {
+class CartBottomnavbar extends StatefulWidget {
   const CartBottomnavbar({super.key});
 
   @override
+  State<CartBottomnavbar> createState() => _CartBottomnavbarState();
+}
+
+class _CartBottomnavbarState extends State<CartBottomnavbar> {
+  double _buttonScale = 1.0;
+
+  void _onTapDown(TapDownDetails details) {
+    setState(() {
+      _buttonScale = 0.95; // Efek mengecil saat ditekan
+    });
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    setState(() {
+      _buttonScale = 1.0; // Kembali ke ukuran semula
+    });
+  }
+
+  void _onTapCancel() {
+    setState(() {
+      _buttonScale = 1.0;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      height: 130,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Rp. 150.000',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.amberAccent,
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(20),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total Pembayaran',
+                style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
               ),
-              child: const Text(
-                'Check Out',
+              Text(
+                'Rp 1.125.000',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF2563EB),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Fitur Tugas No. 2: Tombol Check Out dengan Animasi Tekan (Scale Effect)
+          GestureDetector(
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onTapCancel: _onTapCancel,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Memproses Check Out...'),
+                  backgroundColor: Color(0xFF2563EB),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: AnimatedScale(
+              scale: _buttonScale,
+              duration: const Duration(milliseconds: 100),
+              child: Container(
+                width: double.infinity,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2563EB),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF2563EB).withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    'Check Out Sekarang',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
