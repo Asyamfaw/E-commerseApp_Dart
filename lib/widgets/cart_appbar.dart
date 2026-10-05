@@ -12,7 +12,7 @@ class CartAppBar extends StatelessWidget {
         // Fitur Tugas No. 1: Shadow pada AppBar
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

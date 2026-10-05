@@ -1,9 +1,14 @@
-#Intinya Ini tuh aplikasi e-commerse
+# Intinya Ini tuh aplikasi e-commerse
 
-Projek ini dibikin pake bahasa Dart dan Framework-nya Flutter 
-Dibuat dengan ngetik kode manual dan mecut AI untuk perbagus 
-UI/UX nya.
+# Projek ini dibikin dengan :
+bahasa :
+- [@Dart](https://dart.dev/)
 
-#NOTE INI DIBUAT OLEH DEVELOPER TERGILA DI XI RPL IDN BS.
+Framework : 
+- [@Flutter] (https://flutter.dev/)
 
-- [@Asyamfaw](https://www.github.com/Asyamfaw)
+Dibuat dengan ngetik kode manual dan mecut AI untuk perbagus UI/UX nya.
+
+# NOTE INI DIBUAT OLEH DEVELOPER TERGILA DI XI RPL IDN BS.
+
+- [@Fawwaz](https://www.github.com/Asyamfaw)

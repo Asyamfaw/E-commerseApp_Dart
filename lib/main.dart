@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_commerce_app/pages/home_page.dart';
 import 'package:e_commerce_app/pages/login_page.dart';
 import 'package:e_commerce_app/pages/sign_up_page.dart';
 import 'package:e_commerce_app/pages/account_page.dart';
@@ -20,8 +21,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Color(0xFF2563EB))),
-      home: const LoginPage(),
+      home: const HomePage(),
       routes: {
+        '/Home_page': (context) => const HomePage(),
         '/login_page': (context) => const LoginPage(),
         '/sign_up_page': (context) => const SignUpPage(),
         '/account_page': (context) => const AccountPage(),
