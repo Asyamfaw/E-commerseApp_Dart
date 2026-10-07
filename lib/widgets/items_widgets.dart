@@ -17,6 +17,7 @@ class ItemsWidgets extends StatelessWidget {
     return GridView.count(
       crossAxisCount: 2,
       childAspectRatio: 0.7,
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: [
         for (int i = 0; i < myProdutcsname.length; i++)
