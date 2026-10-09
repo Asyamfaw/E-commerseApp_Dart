@@ -16,16 +16,6 @@ Aplikasi ini diracik menggunakan kombinasi maut antara logika manusia dan paksaa
 
 ---
 
-## 📸 Sneak Peek / Tampilan Aplikasi
-
-*(Biar calon pembeli / penilai gak penasaran, ini bukti kodingan kami bukan cuma mimpi)*
-
-| Halaman Utama | Detail Produk | Keranjang Impian |
-| :---: | :---: | :---: |
-| *(Taruh Gambar/GIF di sini)* | *(Taruh Gambar/GIF di sini)* | *(Taruh Gambar/GIF di sini)* |
-
----
-
 ## 👤 The Mastermind (Developer Tergila)
 
 Projek ini dieksekusi dengan tingkat kegilaan maksimal oleh:
