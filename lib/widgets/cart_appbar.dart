@@ -27,7 +27,7 @@ class CartAppBar extends StatelessWidget {
                 Icons.arrow_back_ios_new_rounded,
                 color: Color(0xFF1E293B),
               ),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(context,),
             ),
             const Text(
               'Keranjang Belanja',

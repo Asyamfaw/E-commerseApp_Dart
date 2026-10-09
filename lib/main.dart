@@ -5,6 +5,7 @@ import 'package:e_commerce_app/pages/sign_up_page.dart';
 import 'package:e_commerce_app/pages/account_page.dart';
 import 'package:e_commerce_app/pages/change_pass_page.dart';
 import 'package:e_commerce_app/pages/cart_page.dart';
+import 'package:e_commerce_app/pages/list_chat.dart';
 
 // import 'package:e_commerce_app/pages/sign_up_page.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/account_page': (context) => const AccountPage(),
         '/change_pass_page': (context) => const ChangePassPage(),
         '/cart_page': (context) => const CartPage(),
+        '/listChat_page': (context) => const ListChatPage(),
       },
     );
   }

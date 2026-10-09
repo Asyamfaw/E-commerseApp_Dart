@@ -30,6 +30,7 @@ class HomeAppbar extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
             child: InkWell(
+              onTap: () => Navigator.pushNamed(context, '/listChat_page'),
               child: Icon(
                 Icons.message_rounded,
                 size: 30,
