@@ -124,6 +124,11 @@ class _ListChatPage extends State<ListChatPage> {
                   ),
                   subtitle: Text(chat['lastMessage'] as String),
                   trailing: Text(chat['time'] as String),
+                  onTap: () => Navigator.pushNamed(
+                    context,
+                    '/detailChat_page',
+                    arguments: {'contactName': chat['name'] as String},
+                  ),
                 );
               },
             ),
