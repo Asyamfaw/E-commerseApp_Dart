@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/pages/detail_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/pages/home_page.dart';
 import 'package:e_commerce_app/pages/login_page.dart';
@@ -31,6 +32,14 @@ class MyApp extends StatelessWidget {
         '/change_pass_page': (context) => const ChangePassPage(),
         '/cart_page': (context) => const CartPage(),
         '/listChat_page': (context) => const ListChatPage(),
+        '/detailChat_page': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments;
+          final contacName =
+              arguments is Map && arguments['contactName'] is String
+              ? arguments['contactName'] as String
+              : 'Anonim';
+          return ChatScreen(contactName: contacName);
+        },
       },
     );
   }

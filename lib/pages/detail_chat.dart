@@ -20,6 +20,24 @@ class _ChatScreenState extends State<ChatScreen> {
     {'text': 'Penjual', 'message': 'Sama-sama!', 'IsMe': false},
   ];
 
+  final TextEditingController _messageController = TextEditingController();
+
+  void _sendMessage() {
+    final messageText = _messageController.text.trim();
+    if (messageText.isNotEmpty) {
+      setState(() {
+        messages.add({'text': 'You', 'message': messageText, 'IsMe': true});
+      });
+      _messageController.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,6 +64,35 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           );
         },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: 'Ketik Pesan',
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => _sendMessage(),
+                ),
+              ),
+              IconButton(
+                onPressed: _sendMessage,
+                icon: Icon(Icons.send),
+                tooltip: 'Kirim Pesan',
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
