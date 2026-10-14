@@ -7,256 +7,381 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-// 1. Tambahkan SingleTickerProviderStateMixin agar class ini bisa jadi vsync animasi
-class _LoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Controller Animasi & Objek Animasi
-  late AnimationController _animController;
-  late Animation<double> _logoScaleAnim;
-
-  // State untuk toggle lihat password
+  // State untuk toggle visibilitas kata sandi dan checkbox ingat akun
   bool _isPasswordHidden = true;
+  bool _rememberMe = true;
 
-  // Warna Utama (Theme Colors)
+  // Warna Desain Tokens sesuai Stitch & AGENTS.md
   static const Color primaryColor = Color(0xFF2563EB); // Modern Royal Blue
-  static const Color primaryLightColor = Color(0xFFEFF6FF); // Soft Blue Accent
-  static const Color textColor = Color(0xFF1E293B);
-  static const Color subtitleColor = Color(0xFF64748B);
+  static const Color backgroundColor = Color(0xFFF8FAFC); // Canvas Background
+  static const Color surfaceColor = Color(0xFFFFFFFF); // Card Surface
+  static const Color textPrimaryColor = Color(0xFF0F172A); // Near-black Slate
+  static const Color textSecondaryColor = Color(0xFF64748B); // Slate Muted
+  static const Color borderColor = Color(0xFFE2E8F0); // Subtle 1px Divider
+  static const Color badgeBgColor = Color(0xFFEFF6FF); // Soft Ice-Blue Accent
+  static const Color errorColor = Color(0xFFDC2626); // Error Semantic
 
-  @override
-  void initState() {
-    super.initState();
-
-    // 2. Inisialisasi AnimationController dengan durasi total 1.2 detik
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-
-    // 3. Efek Bounce elastis khusus Logo/Header
-    _logoScaleAnim = CurvedAnimation(
-      parent: _animController,
-      curve: const Interval(0.0, 0.5, curve: Curves.elasticOut),
-    );
-
-    // 4. Jalankan animasi otomatis saat halaman dibuka
-    _animController.forward();
-  }
-
-  // Biar gak numpuk history & memori bocor
   @override
   void dispose() {
-    _animController.dispose(); // Wajib di-dispose!
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // 5. Helper Function untuk animasi muncul berurutan (Staggered)
-  Widget _buildAnimatedItem({
-    required Widget child,
-    required double startDelay, // Dimulai dari detik ke berapa (0.0 s/d 1.0)
-  }) {
-    // Animasi geser naik dari bawah
-    final slideAnimation =
-        Tween<Offset>(
-          begin: const Offset(0, 0.35), // Mulai sedikit dari bawah
-          end: Offset.zero, // Berhenti di posisi asli
-        ).animate(
-          CurvedAnimation(
-            parent: _animController,
-            curve: Interval(
-              startDelay,
-              (startDelay + 0.35).clamp(0.0, 1.0),
-              curve: Curves.easeOutCubic, // Efek meluncur halus
-            ),
-          ),
-        );
-
-    // Animasi transparan ke jelas (Fade In)
-    final opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: Interval(
-          startDelay,
-          (startDelay + 0.3).clamp(0.0, 1.0),
-          curve: Curves.easeIn,
-        ),
-      ),
-    );
-
-    return SlideTransition(
-      position: slideAnimation,
-      child: FadeTransition(opacity: opacityAnimation, child: child),
-    );
-  }
-
-  // Header Widget dengan Animasi Scale (Membal/Bounce)
+  // Header: Logo App, Badge Electromart ID, Judul & Subjudul
   Widget _buildHeader() {
     return Column(
       children: [
-        // Icon dengan efek membal/bounce
-        ScaleTransition(
-          scale: _logoScaleAnim,
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(
-              color: primaryLightColor,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.shopping_bag_outlined,
-              size: 40,
-              color: primaryColor,
-            ),
+        // App Icon Box dengan badge checklist kecil di sudut kanan bawah
+        Center(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 76,
+                height: 76,
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryColor.withValues(alpha: 0.28),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.bolt_rounded,
+                    size: 44,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Positioned(
+                right: -4,
+                bottom: -4,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: const BoxDecoration(
+                    color: surfaceColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.verified_rounded,
+                    size: 18,
+                    color: primaryColor,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 18),
+
+        // Pill Badge "ELECTROMART ID"
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            color: badgeBgColor,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: primaryColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Text(
+                'ELECTROMART ID',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: primaryColor,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // Judul Utama
         const Text(
-          'Welcome Back!',
+          'Selamat Datang Kembali',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-            letterSpacing: -0.5,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: textPrimaryColor,
+            letterSpacing: -0.4,
+          ),
+        ),
+        const SizedBox(height: 6),
+
+        // Subjudul
+        const Text(
+          'Masuk ke akun Anda untuk melanjutkan\nbelanja elektronik',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            color: textSecondaryColor,
+            height: 1.4,
           ),
         ),
       ],
     );
   }
 
-  // Input Field Email
+  // Field Input Email atau Username
   Widget _buildEmailField() {
-    return TextFormField(
-      controller: _emailController,
-      keyboardType: TextInputType.emailAddress,
-      style: const TextStyle(fontSize: 15, color: textColor),
-      decoration: InputDecoration(
-        labelText: 'Email',
-        labelStyle: const TextStyle(color: subtitleColor, fontSize: 14),
-        hintText: 'nama@email.com',
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-        prefixIcon: const Icon(
-          Icons.email_outlined,
-          color: subtitleColor,
-          size: 22,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              'Email atau Username',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: textPrimaryColor,
+              ),
+            ),
+            Text(
+              'Wajib',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: primaryColor,
+              ),
+            ),
+          ],
         ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryColor, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return "Email tidak boleh kosong";
-        }
-        if (!RegExp(
-          r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$",
-        ).hasMatch(value)) {
-          return 'Format email tidak valid';
-        }
-        return null;
-      },
-    );
-  }
-
-  // Input Field Password
-  Widget _buildPasswordField() {
-    return TextFormField(
-      controller: _passwordController,
-      obscureText: _isPasswordHidden,
-      style: const TextStyle(fontSize: 15, color: textColor),
-      decoration: InputDecoration(
-        labelText: 'Password',
-        labelStyle: const TextStyle(color: subtitleColor, fontSize: 14),
-        prefixIcon: const Icon(
-          Icons.lock_outline_rounded,
-          color: subtitleColor,
-          size: 22,
-        ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _isPasswordHidden
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
-            color: subtitleColor,
-            size: 22,
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          style: const TextStyle(fontSize: 14, color: textPrimaryColor),
+          decoration: InputDecoration(
+            hintText: 'nama@email.com',
+            hintStyle: const TextStyle(color: textSecondaryColor, fontSize: 13),
+            prefixIcon: const Icon(
+              Icons.alternate_email_rounded,
+              color: textSecondaryColor,
+              size: 20,
+            ),
+            filled: true,
+            fillColor: surfaceColor,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: primaryColor, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: errorColor),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: errorColor, width: 1.5),
+            ),
           ),
-          onPressed: () {
-            setState(() {
-              _isPasswordHidden = !_isPasswordHidden;
-            });
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Email atau username tidak boleh kosong';
+            }
+            if (value.contains('@') &&
+                !RegExp(
+                  r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$",
+                ).hasMatch(value.trim())) {
+              return 'Format email tidak valid';
+            }
+            return null;
           },
         ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryColor, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Password tidak boleh kosong";
-        }
-        if (value.length < 6) {
-          return 'Password minimal 6 karakter';
-        }
-        return null;
-      },
+      ],
     );
   }
 
-  // Tombol Login Utama
+  // Field Input Kata Sandi
+  Widget _buildPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              'Kata Sandi',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: textPrimaryColor,
+              ),
+            ),
+            Text(
+              'Min. 6 Karakter',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: primaryColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _passwordController,
+          obscureText: _isPasswordHidden,
+          style: const TextStyle(fontSize: 14, color: textPrimaryColor),
+          decoration: InputDecoration(
+            hintText: '••••••••',
+            hintStyle: const TextStyle(color: textSecondaryColor, fontSize: 13),
+            prefixIcon: const Icon(
+              Icons.lock_outline_rounded,
+              color: textSecondaryColor,
+              size: 20,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordHidden
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: textSecondaryColor,
+                size: 20,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordHidden = !_isPasswordHidden;
+                });
+              },
+            ),
+            filled: true,
+            fillColor: surfaceColor,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: primaryColor, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: errorColor),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: errorColor, width: 1.5),
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Kata sandi tidak boleh kosong';
+            }
+            if (value.length < 6) {
+              return 'Kata sandi minimal 6 karakter';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  // Baris Opsi: Checkbox Ingat Akun Saya & Info Enkripsi SSL
+  Widget _buildOptionsRow() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 22,
+          height: 22,
+          child: Checkbox(
+            value: _rememberMe,
+            activeColor: primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            side: const BorderSide(color: borderColor, width: 1.5),
+            onChanged: (bool? newValue) {
+              setState(() {
+                _rememberMe = newValue ?? false;
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        const Text(
+          'Ingat akun saya',
+          style: TextStyle(
+            fontSize: 12,
+            color: textSecondaryColor,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const Spacer(),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.shield_outlined, size: 14, color: textSecondaryColor),
+            SizedBox(width: 4),
+            Text(
+              'Enkripsi SSL',
+              style: TextStyle(
+                fontSize: 11,
+                color: textSecondaryColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Tombol Submit Utama "Masuk ->"
   Widget _buildLoginButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 48,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
-          elevation: 2,
-          shadowColor: primaryColor.withValues(alpha: 0.4),
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -264,33 +389,151 @@ class _LoginPageState extends State<LoginPage>
         onPressed: () {
           if (_formKey.currentState != null &&
               _formKey.currentState!.validate()) {
-            Navigator.pushNamed(context, '/account_page');
+            Navigator.pushNamed(context, '/Home_page');
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Email atau password tidak valid'),
-                backgroundColor: Colors.redAccent,
+                content: Text('Email/Username atau kata sandi tidak valid'),
+                backgroundColor: errorColor,
                 behavior: SnackBarBehavior.floating,
               ),
             );
           }
         },
-        child: const Text(
-          'Login',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
+              'Masuk',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 8),
+            Icon(Icons.arrow_forward_rounded, size: 18, color: Colors.white),
+          ],
         ),
       ),
     );
   }
 
-  // Link Sign Up
+  // Dua Kartu Fitur Tambahan (Produk Original & Pengiriman Aman)
+  Widget _buildTrustCards() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: badgeBgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor.withValues(alpha: 0.5)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.verified_user_outlined,
+                    size: 18,
+                    color: primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        'Produk Original',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: textPrimaryColor,
+                        ),
+                      ),
+                      Text(
+                        'Garansi Resmi',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: textSecondaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: badgeBgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor.withValues(alpha: 0.5)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.local_shipping_outlined,
+                    size: 18,
+                    color: primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        'Pengiriman Aman',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: textPrimaryColor,
+                        ),
+                      ),
+                      Text(
+                        'Proteksi Penuh',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: textSecondaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Tautan Navigasi ke Halaman Pendaftaran
   Widget _buildSignupLink(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
           'Belum punya akun? ',
-          style: TextStyle(color: subtitleColor, fontSize: 14),
+          style: TextStyle(color: textSecondaryColor, fontSize: 13),
         ),
         GestureDetector(
           onTap: () {
@@ -300,8 +543,8 @@ class _LoginPageState extends State<LoginPage>
             'Daftar Sekarang',
             style: TextStyle(
               color: primaryColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
             ),
           ),
         ),
@@ -312,52 +555,61 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 16.0,
+              horizontal: 20.0,
+              vertical: 24.0,
             ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // 1. Header (Icon Bounce membal)
-                  _buildHeader(),
-                  const SizedBox(height: 36),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 1. Header (Logo, Badge, Title, Subtitle)
+                _buildHeader(),
+                const SizedBox(height: 24),
 
-                  // 2. Email Field muncul di titik 0.2 detik (Slide Up + Fade In)
-                  _buildAnimatedItem(
-                    startDelay: 0.2,
-                    child: _buildEmailField(),
+                // 2. Kartu Putih Utama Pembungkus Form (Card Surface Elevation L1)
+                Container(
+                  padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    color: surfaceColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: borderColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildEmailField(),
+                        const SizedBox(height: 18),
+                        _buildPasswordField(),
+                        const SizedBox(height: 16),
+                        _buildOptionsRow(),
+                        const SizedBox(height: 22),
+                        _buildLoginButton(context),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
 
-                  // 3. Password Field muncul di titik 0.35 detik
-                  _buildAnimatedItem(
-                    startDelay: 0.35,
-                    child: _buildPasswordField(),
-                  ),
-                  const SizedBox(height: 28),
+                // 3. Kartu Info Kepercayaan (Trust Badges)
+                _buildTrustCards(),
+                const SizedBox(height: 28),
 
-                  // 4. Tombol Login muncul di titik 0.5 detik
-                  _buildAnimatedItem(
-                    startDelay: 0.5,
-                    child: _buildLoginButton(context),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // 5. Link Daftar muncul terakhir di titik 0.65 detik
-                  _buildAnimatedItem(
-                    startDelay: 0.65,
-                    child: _buildSignupLink(context),
-                  ),
-                ],
-              ),
+                // 4. Link Pendaftaran
+                _buildSignupLink(context),
+              ],
             ),
           ),
         ),

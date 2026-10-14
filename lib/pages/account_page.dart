@@ -7,172 +7,354 @@ class AccountPage extends StatefulWidget {
   State<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animController;
-
-  // Warna Utama (Theme Colors)
+class _AccountPageState extends State<AccountPage> {
+  // Tema Warna Desain Tokens sesuai Stitch & AGENTS.md
   static const Color primaryColor = Color(0xFF2563EB); // Royal Blue
-  static const Color textColor = Color(0xFF1E293B);
-  static const Color subtitleColor = Color(0xFF64748B);
-
-  @override
-  void initState() {
-    super.initState();
-
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-
-    _animController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animController.dispose();
-    super.dispose();
-  }
-
-  // Helper Widget untuk animasi muncul berurutan (Staggered Animation)
-  Widget _buildAnimatedItem({
-    required Widget child,
-    required double startDelay,
-  }) {
-    final slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.25), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _animController,
-            curve: Interval(
-              startDelay,
-              (startDelay + 0.35).clamp(0.0, 1.0),
-              curve: Curves.easeOutCubic,
-            ),
-          ),
-        );
-
-    final opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: Interval(
-          startDelay,
-          (startDelay + 0.3).clamp(0.0, 1.0),
-          curve: Curves.easeIn,
-        ),
-      ),
-    );
-
-    return SlideTransition(
-      position: slideAnimation,
-      child: FadeTransition(opacity: opacityAnimation, child: child),
-    );
-  }
+  static const Color backgroundColor = Color(0xFFF8FAFC); // Canvas Background
+  static const Color surfaceColor = Color(0xFFFFFFFF); // Card Surface
+  static const Color textPrimaryColor = Color(0xFF0F172A); // Dark Slate
+  static const Color textSecondaryColor = Color(0xFF64748B); // Slate Muted
+  static const Color borderColor = Color(0xFFE2E8F0); // Subtle Border 1px
+  static const Color badgeBgColor = Color(0xFFEFF6FF); // Soft Ice-Blue Accent
+  static const Color errorColor = Color(0xFFDC2626); // Error Semantic
+  static const Color errorBgColor = Color(0xFFFEF2F2); // Soft Red Accent
+  static const Color badgeAlertBgColor = Color(0xFFFFE4E6); // Rose Soft Badge
+  static const Color badgeAlertTextColor = Color(0xFFE11D48); // Rose Dark Text
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Account Page',
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: surfaceColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: textColor),
+        scrolledUnderElevation: 0,
+        titleSpacing: 16,
+        shape: const Border(bottom: BorderSide(color: borderColor, width: 1)),
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Icon(Icons.bolt_rounded, color: Colors.white, size: 20),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'ElectroMart',
+              style: TextStyle(
+                color: textPrimaryColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const Spacer(),
+            const Text(
+              'Account',
+              style: TextStyle(
+                color: textSecondaryColor,
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: borderColor, width: 1.5),
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/MioTertekan.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: badgeBgColor,
+                      child: const Icon(
+                        Icons.person,
+                        size: 20,
+                        color: primaryColor,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAnimatedItem(startDelay: 0.0, child: _buildProfileSection()),
-            const SizedBox(height: 28),
-            _buildSettingsSection(context),
+            // 1. Profil Card Section (Light Blue Gradient Surface)
+            _buildProfileCard(),
+            const SizedBox(height: 24),
+
+            // 2. Kelompok Menu: Keamanan & Akun
+            _buildSectionHeader('KEAMANAN & AKUN'),
+            const SizedBox(height: 10),
+            _buildMenuCard(
+              children: [
+                _buildMenuItem(
+                  icon: Icons.lock_outline_rounded,
+                  iconColor: primaryColor,
+                  iconBgColor: badgeBgColor,
+                  title: 'Ubah Kata Sandi',
+                  subtitle: 'Perbarui kata sandi secara berkala',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/change_pass_page');
+                  },
+                ),
+                const Divider(height: 1, thickness: 1, color: borderColor),
+                _buildMenuItem(
+                  icon: Icons.chat_bubble_outline_rounded,
+                  iconColor: primaryColor,
+                  iconBgColor: badgeBgColor,
+                  title: 'Pesan & Obrolan',
+                  subtitle: 'Konsultasi teknisi & toko resmi',
+                  badgeText: '2 Baru',
+                  onTap: () {
+                    Navigator.pushNamed(context, '/listChat_page');
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // 3. Kelompok Menu: Informasi Aplikasi
+            _buildSectionHeader('INFORMASI APLIKASI'),
+            const SizedBox(height: 10),
+            _buildMenuCard(
+              children: [
+                _buildMenuItem(
+                  icon: Icons.info_outline_rounded,
+                  iconColor: primaryColor,
+                  iconBgColor: badgeBgColor,
+                  title: 'Tentang ElectroMart',
+                  subtitle: 'v1.2.0 - Proyek Flutter',
+                  onTap: () {
+                    _showAboutDialog(context);
+                  },
+                ),
+                const Divider(height: 1, thickness: 1, color: borderColor),
+                _buildMenuItem(
+                  icon: Icons.help_outline_rounded,
+                  iconColor: primaryColor,
+                  iconBgColor: badgeBgColor,
+                  title: 'Bantuan & Panduan',
+                  subtitle: 'Pusat solusi belanja gadget',
+                  onTap: () {
+                    _showHelpDialog(context);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // 4. Kelompok Menu: Sesi (Logout)
+            _buildSectionHeader('SESI'),
+            const SizedBox(height: 10),
+            _buildMenuCard(
+              children: [
+                _buildMenuItem(
+                  icon: Icons.logout_rounded,
+                  iconColor: errorColor,
+                  iconBgColor: errorBgColor,
+                  title: 'Keluar',
+                  titleColor: errorColor,
+                  subtitle: 'Akhiri sesi di perangkat ini',
+                  chevronColor: errorColor,
+                  onTap: () {
+                    _showLogoutDialog(context);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // 5. Footer Keamanan Sesi
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.verified_user_outlined,
+                  size: 14,
+                  color: textSecondaryColor,
+                ),
+                SizedBox(width: 6),
+                Text(
+                  'Sesi Terenkripsi & Terlindungi',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: textSecondaryColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileSection() {
+  // Header teks kategori menu kapital
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.8,
+        color: textSecondaryColor,
+      ),
+    );
+  }
+
+  // Profile Card Header sesuai desain Stitch (Avatar dengan badge verified, nama, email student)
+  Widget _buildProfileCard() {
     return Container(
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
         gradient: const LinearGradient(
-          colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFEFF6FF), // Soft Blue tint di atas
+            Color(0xFFFFFFFF), // Putih solid di bawah
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/ustApri.png',
-                width: 76,
-                height: 76,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 76,
-                    height: 76,
-                    color: Colors.white24,
-                    child: const Icon(
-                      Icons.person,
-                      size: 40,
-                      color: Colors.white,
+          // Avatar dengan Verified Badge
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryColor.withValues(alpha: 0.15),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
-                  );
-                },
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/MioTertekan.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: badgeBgColor,
+                        child: const Icon(
+                          Icons.person,
+                          size: 32,
+                          color: primaryColor,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                right: -2,
+                bottom: -2,
+                child: Container(
+                  padding: const EdgeInsets.all(2.5),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle_rounded,
+                    size: 16,
+                    color: primaryColor,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 18),
+          const SizedBox(width: 14),
+
+          // Info Anggota
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Ust Apri',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: -0.3,
+                // Pill Member
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: badgeBgColor,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: primaryColor.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.bolt_rounded, size: 12, color: primaryColor),
+                      SizedBox(width: 4),
+                      Text(
+                        'ElectroMart Member',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Apriyansyah@gmail.com',
+                const SizedBox(height: 6),
+
+                // Nama Profil
+                const Text(
+                  'Mio Mirza',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 14,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimaryColor,
+                    letterSpacing: -0.2,
                   ),
+                ),
+                const SizedBox(height: 2),
+
+                // Email Profil
+                const Text(
+                  'mio.mirza@student.ac.id',
+                  style: TextStyle(fontSize: 12, color: textSecondaryColor),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -183,228 +365,310 @@ class _AccountPageState extends State<AccountPage>
     );
   }
 
-  Widget _buildSettingItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    bool isLogout = false,
-  }) {
-    final Color itemColor = isLogout ? Colors.redAccent : primaryColor;
-
+  // Wrapper Container Putih untuk Group Item Menu
+  Widget _buildMenuCard({required List<Widget> children}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: itemColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: itemColor, size: 22),
+      child: Column(children: children),
+    );
+  }
+
+  // Baris Item Menu
+  Widget _buildMenuItem({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String title,
+    Color? titleColor,
+    required String subtitle,
+    String? badgeText,
+    Color? chevronColor,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            children: [
+              // Icon Box
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 12),
+
+              // Title & Subtitle
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: titleColor ?? textPrimaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: textSecondaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Opsional Badge Pill (misal "2 Baru")
+              if (badgeText != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: badgeAlertBgColor,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
                   child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isLogout ? Colors.redAccent : textColor,
+                    badgeText,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: badgeAlertTextColor,
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.grey.shade400,
-                  size: 16,
-                ),
+                const SizedBox(width: 8),
               ],
-            ),
+
+              // Chevron Right
+              Icon(
+                Icons.chevron_right_rounded,
+                color: chevronColor ?? const Color(0xFF94A3B8),
+                size: 20,
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSettingsSection(BuildContext context) {
-    return Column(
-      children: [
-        _buildAnimatedItem(
-          startDelay: 0.2,
-          child: _buildSettingItem(
-            context,
-            icon: Icons.person_outline,
-            title: "Profile",
-            onTap: () {
-              Navigator.pushNamed(context, '/account_page');
-            },
+  // Dialog Informasi Tentang Aplikasi
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: surfaceColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ),
-        _buildAnimatedItem(
-          startDelay: 0.2,
-          child: _buildSettingItem(
-            context,
-            icon: Icons.shopping_cart_outlined,
-            title: "My Cart",
-            onTap: () {
-              Navigator.pushNamed(context, '/cart_page');
-            },
+          title: Row(
+            children: const [
+              Icon(Icons.info_outline_rounded, color: primaryColor),
+              SizedBox(width: 8),
+              Text(
+                'Tentang ElectroMart',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimaryColor,
+                ),
+              ),
+            ],
           ),
-        ),
-        _buildAnimatedItem(
-          startDelay: 0.35,
-          child: _buildSettingItem(
-            context,
-            icon: Icons.lock_outline_rounded,
-            title: "Change Password",
-            onTap: () {
-              Navigator.pushNamed(context, '/change_pass_page');
-            },
+          content: const Text(
+            'ElectroMart adalah aplikasi e-commerce elektronik konsumen untuk proyek tugas sekolah. Versi saat ini v1.2.0.',
+            style: TextStyle(
+              fontSize: 13,
+              color: textSecondaryColor,
+              height: 1.4,
+            ),
           ),
-        ),
-        _buildAnimatedItem(
-          startDelay: 0.5,
-          child: _buildSettingItem(
-            context,
-            icon: Icons.logout_rounded,
-            title: "Logout",
-            isLogout: true,
-            onTap: () {
-              _shoLogoutDialog(context);
-            },
-          ),
-        ),
-      ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Tutup',
+                style: TextStyle(
+                  color: primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  // ==========================================
-  //  POP-UP DIALOG LOGOUT DENGAN ANIMASI BAGUS
-  // ==========================================
-  void _shoLogoutDialog(BuildContext context) {
+  // Dialog Bantuan & Panduan
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: surfaceColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: const [
+              Icon(Icons.help_outline_rounded, color: primaryColor),
+              SizedBox(width: 8),
+              Text(
+                'Bantuan & Panduan',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimaryColor,
+                ),
+              ),
+            ],
+          ),
+          content: const Text(
+            'Untuk pertanyaan seputar pemesanan produk, Anda dapat menghubungi toko melalui menu Pesan & Obrolan.',
+            style: TextStyle(
+              fontSize: 13,
+              color: textSecondaryColor,
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Mengerti',
+                style: TextStyle(
+                  color: primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Dialog Konfirmasi Logout
+  void _showLogoutDialog(BuildContext context) {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
-      transitionDuration: const Duration(milliseconds: 400),
-      // Animasi Scale + Fade saat muncul
+      transitionDuration: const Duration(milliseconds: 300),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final curvedAnimation = CurvedAnimation(
           parent: animation,
-          curve: Curves.easeOutBack, // Memberikan efek bounce halus saat muncul
+          curve: Curves.easeOutBack,
         );
         return ScaleTransition(
-          scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
+          scale: Tween<double>(begin: 0.85, end: 1.0).animate(curvedAnimation),
           child: FadeTransition(opacity: animation, child: child),
         );
       },
       pageBuilder: (context, animation, secondaryAnimation) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
           ),
-          backgroundColor: Colors.white,
-          elevation: 10,
-          contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+          backgroundColor: surfaceColor,
+          elevation: 8,
+          contentPadding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icon Lingkaran Merah Logout
               Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                width: 54,
+                height: 54,
+                decoration: const BoxDecoration(
+                  color: errorBgColor,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.logout_rounded,
-                  color: Colors.redAccent,
-                  size: 32,
+                  color: errorColor,
+                  size: 26,
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Judul Dialog
+              const SizedBox(height: 16),
               const Text(
-                'Konfirmasi Logout',
+                'Konfirmasi Keluar',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimaryColor,
                 ),
               ),
               const SizedBox(height: 8),
-
-              // Pesan Teks
               const Text(
-                'Yakin mau keluar lek?',
+                'Apakah Anda yakin ingin keluar dari akun ElectroMart?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: subtitleColor,
+                  fontSize: 13,
+                  color: textSecondaryColor,
                   height: 1.4,
                 ),
               ),
-              const SizedBox(height: 28),
-
-              // Action Buttons (Batal & Logout)
+              const SizedBox(height: 24),
               Row(
                 children: [
-                  // Tombol Batal / Cancel
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        side: BorderSide(color: Colors.grey.shade300),
+                        side: const BorderSide(color: borderColor),
                       ),
                       onPressed: () => Navigator.of(context).pop(),
                       child: const Text(
                         'Batal',
                         style: TextStyle(
-                          color: subtitleColor,
+                          color: textSecondaryColor,
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          fontSize: 14,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
-
-                  // Tombol Logout
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
+                        backgroundColor: errorColor,
                         foregroundColor: Colors.white,
-                        elevation: 2,
-                        shadowColor: Colors.redAccent.withValues(alpha: 0.4),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       onPressed: () {
@@ -416,17 +680,17 @@ class _AccountPageState extends State<AccountPage>
                         );
                         messenger.showSnackBar(
                           const SnackBar(
-                            content: Text('Beneran keluar dia lek'),
-                            backgroundColor: Colors.blue,
+                            content: Text('Anda telah keluar dari akun'),
+                            backgroundColor: textPrimaryColor,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
                       },
                       child: const Text(
-                        'Logout',
+                        'Keluar',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
                         ),
                       ),
                     ),

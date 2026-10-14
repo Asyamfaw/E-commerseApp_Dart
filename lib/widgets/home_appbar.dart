@@ -1,44 +1,83 @@
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart' as badges;
 
 class HomeAppbar extends StatelessWidget {
   const HomeAppbar({super.key});
 
+  static const Color primaryColor = Color(0xFF2563EB); // Royal Blue
+  static const Color textPrimaryColor = Color(0xFF0F172A); // Slate 900
+  static const Color textSecondaryColor = Color(0xFF64748B); // Slate 500
+  static const Color borderColor = Color(0xFFE2E8F0); // Border
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(245, 241, 185, 42),
-      padding: const EdgeInsets.all(25),
-      child: Row(
-        children: [
-          const Icon(Icons.sort, size: 25),
-          const Padding(
-            padding: EdgeInsetsGeometry.only(left: 20),
-            child: Text(
-              'ApriStore',
-              style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const Spacer(),
-          badges.Badge(
-            badgeStyle: const badges.BadgeStyle(
-              badgeColor: Colors.red,
-              padding: EdgeInsetsGeometry.all(6),
-            ),
-            badgeContent: const Text(
-              '9',
-              style: TextStyle(color: Colors.white),
-            ),
-            child: InkWell(
-              onTap: () => Navigator.pushNamed(context, '/listChat_page'),
-              child: Icon(
-                Icons.message_rounded,
-                size: 30,
-                color: Color.fromARGB(255, 90, 92, 92),
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          children: [
+            // Logo Icon & Brand Name
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: 0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.bolt_rounded,
+                color: Colors.white,
+                size: 24,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            const Text(
+              'ElectroMart',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: textPrimaryColor,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const Spacer(),
+
+            // Label "Home" & Profil Pengguna
+            Row(
+              children: [
+                const Text(
+                  'Home',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: textSecondaryColor,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: borderColor, width: 1.5),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/MioTertekan.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

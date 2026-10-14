@@ -5,7 +5,6 @@ import 'package:e_commerce_app/pages/login_page.dart';
 import 'package:e_commerce_app/pages/sign_up_page.dart';
 import 'package:e_commerce_app/pages/account_page.dart';
 import 'package:e_commerce_app/pages/change_pass_page.dart';
-import 'package:e_commerce_app/pages/cart_page.dart';
 import 'package:e_commerce_app/pages/list_chat.dart';
 
 // import 'package:e_commerce_app/pages/sign_up_page.dart';
@@ -30,15 +29,34 @@ class MyApp extends StatelessWidget {
         '/sign_up_page': (context) => const SignUpPage(),
         '/account_page': (context) => const AccountPage(),
         '/change_pass_page': (context) => const ChangePassPage(),
-        '/cart_page': (context) => const CartPage(),
+        '/cart_page': (context) => const HomePage(),
         '/listChat_page': (context) => const ListChatPage(),
         '/detailChat_page': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments;
-          final contacName =
+          final contactName =
               arguments is Map && arguments['contactName'] is String
               ? arguments['contactName'] as String
               : 'Anonim';
-          return ChatScreen(contactName: contacName);
+          final chatId = arguments is Map && arguments['chatId'] is String
+              ? arguments['chatId'] as String
+              : null;
+          final storeCategory =
+              arguments is Map && arguments['storeCategory'] is String
+              ? arguments['storeCategory'] as String
+              : null;
+          final isOnline = arguments is Map && arguments['isOnline'] is bool
+              ? arguments['isOnline'] as bool
+              : null;
+          final avatarUrl = arguments is Map && arguments['avatarUrl'] is String
+              ? arguments['avatarUrl'] as String
+              : null;
+          return ChatScreen(
+            contactName: contactName,
+            chatId: chatId,
+            storeCategory: storeCategory,
+            isOnline: isOnline,
+            avatarUrl: avatarUrl,
+          );
         },
       },
     );
